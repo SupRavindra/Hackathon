@@ -9,6 +9,7 @@ import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
 import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.evaluation.classification.Evaluation;
 import org.nd4j.linalg.activations.Activation;
+import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 //import org.nd4j.linalg.dataset.iterator.impl.FileDataSetIterator;
 import org.nd4j.linalg.learning.config.Adam;
@@ -16,23 +17,25 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
 import org.nd4j.linalg.dataset.DataSet;
 
 import java.io.File;
+import java.io.IOException;
 
 public class NeuralNetworkTraining {
-    public static void main(String[] args) throws Exception {
+    private static MultiLayerNetwork model;
+     public MultiLayerNetwork createModel ()throws Exception {
         // Parameters
         int height = 128; // Image height
         int width = 128; // Image width
         int channels = 1; // Grayscale images
         int outputNum = 2; // Number of classes (e.g., forgery vs. authentic)
-        int batchSize = 32; // Batch size
+        int batchSize = 64; // Batch size
         int epochs = 10; // Number of training epochs
 
         // Load preprocessed dataset
         File trainingData = new File("path/to/training/data");
         File testingData = new File("path/to/testing/data");
-
         DataSetIterator trainIter = new FileDataSetIterator(trainingData, batchSize);
         DataSetIterator testIter = new FileDataSetIterator(testingData, batchSize);
+
 
         // Define the neural network architecture
         MultiLayerConfiguration config = new NeuralNetConfiguration.Builder()
@@ -61,7 +64,8 @@ public class NeuralNetworkTraining {
                 .setInputType(InputType.convolutional(height, width, channels))
                 .build();
 
-        MultiLayerNetwork model = new MultiLayerNetwork(config);
+        model = new MultiLayerNetwork(config);
+
         model.init();
 
         // Print the score every iteration
@@ -81,5 +85,16 @@ public class NeuralNetworkTraining {
         File modelFile = new File("trained_model.zip");
         ModelSerializer.writeModel(model, modelFile, true);
         System.out.println("Model saved at: " + modelFile.getAbsolutePath());
+        return model;
+    }
+    public void trainModel(File file) throws Exception {
+        MultiLayerNetwork model = createModel();
+        // Train the model using the preprocessed data
+        DataSetIterator trainIterator = new FileDataSetIterator(file, 64);
+        model.fit(trainIterator);
+    }
+
+    public static void main(String[] args) throws IOException {
+        MultiLayerNetwork model = ModelSerializer.restoreMultiLayerNetwork("path_to_model.zip");
     }
 }
