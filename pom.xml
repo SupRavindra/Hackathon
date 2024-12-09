@@ -32,11 +32,6 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>org.tensorflow</groupId>
-            <artifactId>tensorflow</artifactId>
-            <version>0.3.3</version> <!-- Or another version of TensorFlow -->
-        </dependency>
-        <dependency>
             <groupId>org.deeplearning4j</groupId>
             <artifactId>deeplearning4j-core</artifactId>
             <version>1.0.0-M1.1</version>
@@ -77,6 +72,7 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <build>
